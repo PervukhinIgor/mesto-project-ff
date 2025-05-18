@@ -1,7 +1,8 @@
+// Находим шаблон карточки
+const cardTemplate = document.querySelector('#card-template').content;
+
 // Функция создания карточки
-export function createCard(cardData, deleteCallback, likeCallback) {
-  // Находим шаблон карточки
-  const cardTemplate = document.querySelector('#card-template').content;
+export function createCard(cardData, onDeleteCard, onLikeCard, onOpenImagePopup) {
   
   // Клонируем содержимое шаблона
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -18,13 +19,14 @@ export function createCard(cardData, deleteCallback, likeCallback) {
   cardTitle.textContent = cardData.name;
   
   // Обработчик события на кнопку удаления
-  deleteButton.addEventListener('click', function() {
-    deleteCallback(cardElement);
-  });
+  deleteButton.addEventListener('click', () => onDeleteCard(cardElement));
 
   // Обработчик события на кнопку лайка
-  likeButton.addEventListener('click', function() {
-    likeCallback(likeButton);
+  likeButton.addEventListener('click', () => onLikeCard(likeButton));
+  
+  // Обработчик события на картинке  
+  cardImage.addEventListener('click', () => {
+    onOpenImagePopup(cardData);
   });
   
   return cardElement;

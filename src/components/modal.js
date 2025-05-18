@@ -16,22 +16,6 @@ export function closeByEscacpe(evt) {
   }
 }
 
-// Закртие по клике вне контента
-document.querySelectorAll('.popup').forEach(popup => {
-  popup.addEventListener('click', (evt) => {
-    if (evt.target === popup) {
-      closePopup(popup);
-    }
-  })
-});
-
-// Закрытие попапов по крестику
-document.querySelectorAll('.popup__close').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const popup = btn.closest('.popup');
-    closePopup(popup);
-  });
-});
 
 
 

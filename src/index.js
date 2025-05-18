@@ -7,54 +7,40 @@ const popupTypeNewCard = document.querySelector('.popup_type_new-card');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupTypeImage = document.querySelector('.popup_type_image');
 
-const openPopupTypeNewCard = document.querySelector('.profile__add-button');
-const openPopupTypeEdit = document.querySelector('.profile__edit-button');
+const buttonOpenPopupTypeNewCard = document.querySelector('.profile__add-button');
+const buttonOpenPopupTypeEdit = document.querySelector('.profile__edit-button');
 
 const profileForm = document.querySelector('[name="edit-profile"]');
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const profileNameInput = profileForm.querySelector('[name="name"]');
+const profileDescriptionInput = profileForm.querySelector('[name="description"]');
+
+const popupImage = popupTypeImage.querySelector('.popup__image');
+const popupImageCaption = popupTypeImage.querySelector('.popup__caption');
+
 const cardForm = document.querySelector('[name="new-place"]');
+const placeInput = cardForm.querySelector('[name="place-name"]');
+const linkInput = cardForm.querySelector('[name="link"]');
 
 const placesList = document.querySelector('.places__list');
 
-// Вывести карточки на страницу
-initialCards.forEach(function(cardData) {
-  // Создаем элемент карточки
-  const newCard = createCard(cardData, deleteCard, likeCard);
+function openImagePopup(cardData) {
+  // Заполняем попап данными из карточки
+  popupImage.src = cardData.link;
+  popupImage.alt = `Увеличенное изображение ${cardData.name}`;
+  popupImageCaption.textContent = cardData.name;
   
-  // Добавляем карточку в контейнер
-  placesList.appendChild(newCard);
-});
-
-// Открытие попапа с добавлением карточки 
-openPopupTypeNewCard.addEventListener('click', () => openPopup(popupTypeNewCard));
-
-// Открытие попапа с изменеием данных профиля
-openPopupTypeEdit.addEventListener('click', () => openPopup(popupTypeEdit));
-
-// Открытие картинки в попапе
-document.addEventListener('click', (evt) => {
-  if (evt.target.classList.contains('card__image')) {
-    const popupImage = popupTypeImage.querySelector('.popup__image');
-    const popupImageCaption = popupTypeImage.querySelector('.popup__caption');
-    popupImage.src = evt.target.dataset.fullImage || evt.target.src;
-    popupImage.alt = evt.target.alt;
-    popupImageCaption.textContent = evt.target.alt;
-    openPopup(popupTypeImage);
-  }
-});
+  // Открываем попап
+  openPopup(popupTypeImage);
+}
 
 // Обработка формы с измененеим данных профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
-  const form = evt.target;
-  const nameInput = document.querySelector('[name="name"]');
-  const jobInput = document.querySelector('[name="description"]');
-
-  const profileName = document.querySelector('.profile__title');
-  const profileJob = document.querySelector('.profile__description');
-
-  profileName.textContent = nameInput.value;
-  profileJob.textContent = jobInput.value;
+  profileName.textContent = profileNameInput.value;
+  profileDescription.textContent = profileDescriptionInput.value;
 
   profileForm.reset(); 
   closePopup(popupTypeEdit); 
@@ -64,20 +50,64 @@ function handleProfileFormSubmit(evt) {
 function handleAddCardFormSubmit(evt) {
   evt.preventDefault();
 
-  const placeInput = cardForm.querySelector('[name="place-name"]');
-  const linkInput = cardForm.querySelector('[name="link"]');
-
   const cardData = {
     name: placeInput.value,
     link: linkInput.value
   };
 
-  const newCard = createCard(cardData, deleteCard, likeCard);
+  const newCard = createCard(cardData, deleteCard, likeCard, openImagePopup);
   placesList.prepend(newCard);
 
   cardForm.reset();
   closePopup(popupTypeNewCard);
 }
+
+// Вывести карточки на страницу
+initialCards.forEach(function(cardData) {
+  // Создаем элемент карточки
+  const newCard = createCard(cardData, deleteCard, likeCard, openImagePopup);
+  
+  // Добавляем карточку в контейнер
+  placesList.appendChild(newCard);
+});
+
+// Открытие попапа с добавлением карточки 
+buttonOpenPopupTypeNewCard.addEventListener('click', () => openPopup(popupTypeNewCard));
+
+// Открытие попапа с изменеием данных профиля
+buttonOpenPopupTypeEdit.addEventListener('click', () => {
+  openPopup(popupTypeEdit);
+  profileNameInput.value = profileName.textContent;
+  profileDescriptionInput.value = profileDescription.textContent;
+});
+
+// Открытие картинки в попапе
+document.addEventListener('click', (evt) => {
+  if (evt.target.classList.contains('card__image')) {
+    popupImage.src = evt.target.dataset.fullImage || evt.target.src;
+    popupImage.alt = evt.target.alt;
+    popupImageCaption.textContent = evt.target.alt;
+    openPopup(popupTypeImage);
+  }
+});
+
+// Закртие по клике вне контента
+document.querySelectorAll('.popup').forEach(popup => {
+  popup.addEventListener('click', (evt) => {
+    if (evt.target === popup) {
+      closePopup(popup);
+    }
+  })
+});
+
+// Закрытие попапов по крестику
+document.querySelectorAll('.popup__close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const popup = btn.closest('.popup');
+    closePopup(popup);
+  });
+});
+
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleAddCardFormSubmit);
