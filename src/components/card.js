@@ -1,5 +1,5 @@
 // Функция создания карточки
-function createCard(cardData, deleteCallback) {
+export function createCard(cardData, deleteCallback, likeCallback) {
   // Находим шаблон карточки
   const cardTemplate = document.querySelector('#card-template').content;
   
@@ -10,35 +10,32 @@ function createCard(cardData, deleteCallback) {
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
   const deleteButton = cardElement.querySelector('.card__delete-button');
+  const likeButton = cardElement.querySelector('.card__like-button');
   
   // Заполняем элементы данными из cardData
   cardImage.src = cardData.link;
   cardImage.alt = cardData.name;
   cardTitle.textContent = cardData.name;
   
-  // Добавляем обработчик события на кнопку удаления
+  // Обработчик события на кнопку удаления
   deleteButton.addEventListener('click', function() {
-      deleteCallback(cardElement);
+    deleteCallback(cardElement);
+  });
+
+  // Обработчик события на кнопку лайка
+  likeButton.addEventListener('click', function() {
+    likeCallback(likeButton);
   });
   
-  // Возвращаем готовый элемент карточки
   return cardElement;
 }
 
 // Функция удаления карточки
-function deleteCard(cardElement) {
+export function deleteCard(cardElement) {
   cardElement.remove();
 }
 
-// Вывести карточки на страницу
-
-// Контейнер для карточек
-const placesList = document.querySelector('.places__list');
-
-initialCards.forEach(function(cardData) {
-  // Создаем элемент карточки
-  const newCard = createCard(cardData, deleteCard);
-  
-  // Добавляем карточку в контейнер
-  placesList.appendChild(newCard);
-});
+// Функция лайка карточки
+export function likeCard(likeButton) {
+  likeButton.classList.toggle('card__like-button_is-active');
+}
