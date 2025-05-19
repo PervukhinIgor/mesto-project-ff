@@ -1,4 +1,4 @@
-import {initialCards} from './scripts/cards.js'
+import { initialCards } from './components/cards.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openPopup, closePopup } from './components/modal.js';
 import './pages/index.css'
@@ -81,17 +81,7 @@ buttonOpenPopupTypeEdit.addEventListener('click', () => {
   profileDescriptionInput.value = profileDescription.textContent;
 });
 
-// Открытие картинки в попапе
-document.addEventListener('click', (evt) => {
-  if (evt.target.classList.contains('card__image')) {
-    popupImage.src = evt.target.dataset.fullImage || evt.target.src;
-    popupImage.alt = evt.target.alt;
-    popupImageCaption.textContent = evt.target.alt;
-    openPopup(popupTypeImage);
-  }
-});
-
-// Закртие по клике вне контента
+// Закртие по клику вне контента
 document.querySelectorAll('.popup').forEach(popup => {
   popup.addEventListener('click', (evt) => {
     if (evt.target === popup) {
@@ -107,7 +97,6 @@ document.querySelectorAll('.popup__close').forEach(btn => {
     closePopup(popup);
   });
 });
-
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleAddCardFormSubmit);
