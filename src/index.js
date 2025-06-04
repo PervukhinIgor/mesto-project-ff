@@ -1,7 +1,8 @@
 import { initialCards } from './components/cards.js'
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { openPopup, closePopup } from './components/modal.js';
-import './pages/index.css'
+import {enableValidation, clearValidation} from './components/validation.js';
+import './pages/index.css';
 
 const popupTypeNewCard = document.querySelector('.popup_type_new-card');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
@@ -23,7 +24,18 @@ const cardForm = document.querySelector('[name="new-place"]');
 const placeInput = cardForm.querySelector('[name="place-name"]');
 const linkInput = cardForm.querySelector('[name="link"]');
 
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type-error',
+  errorClass: 'popup__error_visible'
+}
+
 const placesList = document.querySelector('.places__list');
+
+
 
 function openImagePopup(cardData) {
   // Заполняем попап данными из карточки
@@ -72,10 +84,15 @@ initialCards.forEach(function(cardData) {
 });
 
 // Открытие попапа с добавлением карточки 
-buttonOpenPopupTypeNewCard.addEventListener('click', () => openPopup(popupTypeNewCard));
+buttonOpenPopupTypeNewCard.addEventListener('click', () => {
+  //убираем сообщения валидации
+  clearValidation(cardForm, validationConfig);
+  openPopup(popupTypeNewCard)
+});
 
 // Открытие попапа с изменеием данных профиля
 buttonOpenPopupTypeEdit.addEventListener('click', () => {
+  clearValidation(popupTypeEdit, validationConfig);
   openPopup(popupTypeEdit);
   profileNameInput.value = profileName.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
@@ -100,3 +117,4 @@ document.querySelectorAll('.popup__close').forEach(btn => {
 
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleAddCardFormSubmit);
+enableValidation(validationConfig);
