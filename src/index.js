@@ -39,7 +39,7 @@ const validationConfig = {
   inputSelector: '.popup__input',
   submitButtonSelector: '.popup__button',
   inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type-error',
+  inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
 }
 
@@ -145,6 +145,10 @@ Promise.all([getUserInfo(), getCards()])
       const newCard = createCard(card, userId, deleteCard, handleLikeCard, openImagePopup);
       placesList.appendChild(newCard);
     });
+
+    profileName.textContent = userData.name;
+    profileDescription.textContent = userData.about;
+    profileImage.style.backgroundImage = `url('${userData.avatar}')`;
   })
   .catch((error) => {
     console.error('Ошибка при загрузке данных: ', error);
@@ -191,11 +195,4 @@ document.querySelectorAll('.popup__close').forEach(btn => {
 profileForm.addEventListener('submit', handleProfileFormSubmit);
 cardForm.addEventListener('submit', handleAddCardFormSubmit);
 updateAvatarForm.addEventListener('submit', handleUpdateAvatarFormSubmit);
-
-getUserInfo().then((data) => {
-  profileName.textContent = data.name;
-  profileDescription.textContent = data.about;
-  profileImage.style.backgroundImage = `url('${data.avatar}')`;
-});
-
 enableValidation(validationConfig);

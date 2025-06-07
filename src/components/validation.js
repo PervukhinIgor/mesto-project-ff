@@ -1,43 +1,32 @@
-const regEx = /^[a-zA-Zа-яА-ЯёЁ\- ]+$/;
-
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (formElement, inputElement, errorMessage, config) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add('popup__input_type-error');
+  inputElement.classList.add(config.inputErrorClass);
   errorElement.textContent = errorMessage;
-  errorElement.classList.add('popup__input-error_active');
+  errorElement.classList.add(config.errorClass);
 };
 
-const hideInputError = (formElement, inputElement) => {
+const hideInputError = (formElement, inputElement, config) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove('popup__input_type_error');
-  errorElement.classList.remove('popup__input-error_active');
+  inputElement.classList.remove(config.inputErrorClass);
+  errorElement.classList.remove(config.errorClass);
   errorElement.textContent = '';
 };
 
-const checkInputValidity = (formElement, inputElement) => {
+const checkInputValidity = (formElement, inputElement, config) => {
   let errorMessage = '';
   
-  if (inputElement.name === 'name' && !regEx.test(inputElement.value)) {
+  if (inputElement.validity.patternMismatch) {
     errorMessage = inputElement.dataset.error;
-  } else if (inputElement.name === 'link' && !isURLValid(inputElement.value)) {
+  } else if (inputElement.validity.typeMismatch) {
     errorMessage = inputElement.dataset.error;
   } else if (!inputElement.validity.valid) {
     errorMessage = inputElement.validationMessage;
   }
 
   if (errorMessage) {
-    showInputError(formElement, inputElement, errorMessage);
+    showInputError(formElement, inputElement, errorMessage, config);
   } else {
-    hideInputError(formElement, inputElement);
-  }
-};
-
-const isURLValid = (url) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (e) {
-    return false;
+    hideInputError(formElement, inputElement, config);
   }
 };
 
@@ -45,12 +34,12 @@ const setEventListeners = (formElement, config) => {
   const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
 
-  toggleButtonState(inputList,  buttonElement);
+  toggleButtonState(inputList,  buttonElement, config);
 
   inputList.forEach((inputElement) => {
     inputElement.addEventListener('input', function () {
       checkInputValidity(formElement, inputElement, config);
-      toggleButtonState(inputList, buttonElement)
+      toggleButtonState(inputList, buttonElement, config)
     });
   });
 
@@ -70,21 +59,17 @@ export const enableValidation = (config) => {
 
 const hasInvalidInput = (inputList) => {
   return inputList.some((inputElement) => {
-    if (inputElement.name === 'link') {
-      return !isURLValid(inputElement.value) || !inputElement.validity.valid;
-    } else {
-      return !regEx.test(inputElement.value) || !inputElement.validity.valid;
-    }
+    return !inputElement.validity.valid;
   });
 };
 
-const toggleButtonState = (inputList, buttonElement) => {
+const toggleButtonState = (inputList, buttonElement, config) => {
   if (hasInvalidInput(inputList)) {
     buttonElement.disabled = true;
-    buttonElement.classList.add('popup__button_disabled');
+    buttonElement.classList.add(config.inactiveButtonClass);
   } else {
     buttonElement.disabled = false;
-    buttonElement.classList.remove('popup__button_disabled');
+    buttonElement.classList.remove(config.inactiveButtonClass);
   }
 };
 
@@ -103,5 +88,5 @@ export const clearValidation = (formElement, config) => {
     errorElement.textContent = '';
   });
 
-  toggleButtonState(inputList, buttonElement);
+  toggleButtonState(inputList, buttonElement, config);
 }
